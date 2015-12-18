@@ -21,14 +21,6 @@ vcontrol.wmt.__index = vcontrol
 -- Private utility functions
 ------------------------------------------
 
-function fg(color, text)
-    if color == nil then
-        return text
-    else
-        return '<span color="' .. color .. '">' .. text .. '</span>'
-    end
-end
-
 local function readcommand(command)
     local file = io.popen(command)
     local text = file:read('*all')
@@ -61,7 +53,7 @@ function vcontrol.new(args)
     local sw = setmetatable({}, vcontrol.wmt)
 
     sw.cmd = "xbacklight"
-    sw.step = args.step or '20'
+    sw.step = args.step or '5'
 
     sw.widget = wibox.widget.textbox()
     sw.widget.set_align("right")
@@ -85,7 +77,7 @@ function vcontrol:exec(...)
 end
 
 function vcontrol:get()
-    local brightness = math.floor(tonumber(self:exec("-get")))
+    local brightness = math.floor(0.5+tonumber(self:exec("-get")))
     self.widget:set_text(string.format(" [%3d] ", brightness))
     return brightness
 end
