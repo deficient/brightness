@@ -2,7 +2,9 @@
 
 ### Description
 
-Brightness (backlight) indicator+control widget for awesome window manager.
+Brightness (backlight) indicator+control widget for awesome window manager
+based on ``xbacklight``.
+
 
 ### Installation
 
@@ -11,6 +13,8 @@ Drop the script into your awesome config folder. Suggestion:
 ```bash
 cd ~/.config/awesome
 git clone https://github.com/coldfix/awesome-brightness.git
+
+sudo pacman -S xorg-xbacklight
 ```
 
 
@@ -24,7 +28,7 @@ local brightness = require("awesome-brightness.brightness")
 
 
 -- instanciate the control
-brightness_ctrl = brightness({channel="Master"})
+brightness_ctrl = brightness({})
 
 
 -- add the widget to your wibox

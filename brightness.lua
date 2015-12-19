@@ -2,6 +2,7 @@ local awful = require("awful")
 local wibox = require("wibox")
 
 -- Volume Control
+-- based on ``xbacklight``!
 
 -- vcontrol.mt: module (class) metatable
 -- vcontrol.wmt: widget (instance) metatable
