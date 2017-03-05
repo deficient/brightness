@@ -29,20 +29,20 @@ local function readcommand(command)
     return text
 end
 
-local function quote(str)
+local function quote_arg(str)
     return "'" .. string.gsub(str, "'", "'\\''") .. "'"
 end
 
-local function arg(first, ...)
+local function quote_args(first, ...)
     if #{...} == 0 then
-        return quote(first)
+        return quote_arg(first)
     else
-        return quote(first), arg(...)
+        return quote_arg(first), quote_args(...)
     end
 end
 
-local function argv(...)
-    return table.concat({arg(...)}, " ")
+local function make_argv(...)
+    return table.concat({quote_args(...)}, " ")
 end
 
 
@@ -74,7 +74,7 @@ function vcontrol.new(args)
 end
 
 function vcontrol:exec(...)
-    return readcommand(argv(self.cmd, ...))
+    return readcommand(make_argv(self.cmd, ...))
 end
 
 function vcontrol:get()
