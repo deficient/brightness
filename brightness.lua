@@ -1,5 +1,6 @@
 local awful = require("awful")
 local wibox = require("wibox")
+local gears = require("gears")
 
 -- Volume Control
 -- based on ``xbacklight``!
@@ -65,7 +66,7 @@ function vcontrol.new(args)
         awful.button({ }, 2, function() sw:toggle() end)
     ))
 
-    sw.timer = timer({ timeout = args.timeout or 3 })
+    sw.timer = gears.timer({ timeout = args.timeout or 3 })
     sw.timer:connect_signal("timeout", function() sw:get() end)
     sw.timer:start()
     sw:get()
