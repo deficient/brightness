@@ -1,17 +1,22 @@
+--[[
+
+Brightness control
+==================
+
+based on `xbacklight`!
+
+alternative ways to control brightness:
+    sudo setpci -s 00:02.0 F4.B=80
+    xgamma -gamma .75
+    xrandr --output LVDS1 --brightness 0.9
+    echo X > /sys/class/backlight/intel_backlight/brightness
+    xbacklight
+
+--]]
+
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
-
--- Volume Control
--- based on ``xbacklight``!
-
-
--- alternative ways:
---  sudo setpci -s 00:02.0 F4.B=80
---  xgamma -gamma .75
---  xrandr --output LVDS1 --brightness 0.9
---  echo X > /sys/class/backlight/intel_backlight/brightness
---  xbacklight
 
 
 ------------------------------------------
