@@ -5,11 +5,6 @@ local gears = require("gears")
 -- Volume Control
 -- based on ``xbacklight``!
 
--- vcontrol.mt: module (class) metatable
--- vcontrol.wmt: widget (instance) metatable
-local vcontrol = { mt = {}, wmt = {} }
-vcontrol.wmt.__index = vcontrol
-
 
 -- alternative ways:
 --  sudo setpci -s 00:02.0 F4.B=80
@@ -51,27 +46,31 @@ end
 -- Volume control interface
 ------------------------------------------
 
-function vcontrol.new(args)
-    local sw = setmetatable({}, vcontrol.wmt)
+local vcontrol = {}
 
-    sw.cmd = "xbacklight"
-    sw.step = args.step or '5'
+function vcontrol:new(args)
+    return setmetatable({}, {__index = self}):init(args)
+end
 
-    sw.widget = wibox.widget.textbox()
-    sw.widget.set_align("right")
+function vcontrol:init(args)
+    self.cmd = "xbacklight"
+    self.step = args.step or '5'
 
-    sw.widget:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() sw:up() end),
-        awful.button({ }, 3, function() sw:down() end),
-        awful.button({ }, 2, function() sw:toggle() end)
+    self.widget = wibox.widget.textbox()
+    self.widget.set_align("right")
+
+    self.widget:buttons(awful.util.table.join(
+        awful.button({ }, 1, function() self:up() end),
+        awful.button({ }, 3, function() self:down() end),
+        awful.button({ }, 2, function() self:toggle() end)
     ))
 
-    sw.timer = gears.timer({ timeout = args.timeout or 3 })
-    sw.timer:connect_signal("timeout", function() sw:get() end)
-    sw.timer:start()
-    sw:get()
+    self.timer = gears.timer({ timeout = args.timeout or 3 })
+    self.timer:connect_signal("timeout", function() self:get() end)
+    self.timer:start()
+    self:get()
 
-    return sw
+    return self
 end
 
 function vcontrol:exec(...)
@@ -107,9 +106,7 @@ function vcontrol:toggle()
     end
 end
 
-function vcontrol.mt:__call(...)
-    return vcontrol.new(...)
-end
-
-return setmetatable(vcontrol, vcontrol.mt)
+return setmetatable(vcontrol, {
+  __call = vcontrol.new,
+})
 
