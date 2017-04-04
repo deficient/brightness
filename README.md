@@ -24,7 +24,7 @@ In your `~/.config/awesome/rc.lua`:
 
 ```lua
 -- load the module
-local brightness = require("awesome-brightness.brightness")
+local brightness = require("awesome-brightness")
 
 
 -- instanciate the control
