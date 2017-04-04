@@ -18,6 +18,8 @@ local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
 
+local timer = gears.timer or timer
+
 
 ------------------------------------------
 -- Private utility functions
@@ -70,7 +72,7 @@ function vcontrol:init(args)
         awful.button({ }, 2, function() self:toggle() end)
     ))
 
-    self.timer = gears.timer({ timeout = args.timeout or 3 })
+    self.timer = timer({ timeout = args.timeout or 3 })
     self.timer:connect_signal("timeout", function() self:get() end)
     self.timer:start()
     self:get()
