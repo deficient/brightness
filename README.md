@@ -12,7 +12,7 @@ Drop the script into your awesome config folder. Suggestion:
 
 ```bash
 cd ~/.config/awesome
-git clone https://github.com/coldfix/awesome-brightness.git
+git clone https://github.com/deficient/brightness.git
 
 sudo pacman -S xorg-xbacklight
 ```
@@ -24,7 +24,7 @@ In your `~/.config/awesome/rc.lua`:
 
 ```lua
 -- load the module
-local brightness = require("awesome-brightness")
+local brightness = require("brightness")
 
 
 -- instanciate the control
