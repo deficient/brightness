@@ -69,7 +69,9 @@ function vcontrol:init(args)
     self.widget:buttons(awful.util.table.join(
         awful.button({ }, 1, function() self:up() end),
         awful.button({ }, 3, function() self:down() end),
-        awful.button({ }, 2, function() self:toggle() end)
+        awful.button({ }, 2, function() self:toggle() end),
+        awful.button({ }, 4, function() self:up(1) end),
+        awful.button({ }, 5, function() self:down(1) end)
     ))
 
     self.timer = timer({ timeout = args.timeout or 3 })
@@ -95,19 +97,19 @@ function vcontrol:set(brightness)
     self:get()
 end
 
-function vcontrol:up()
-    self:exec("-inc", self.step)
+function vcontrol:up(step)
+    self:exec("-inc", step or self.step)
     self:get()
 end
 
-function vcontrol:down()
-    self:exec("-dec", self.step)
+function vcontrol:down(step)
+    self:exec("-dec", step or self.step)
     self:get()
 end
 
 function vcontrol:toggle()
     if self:get() >= 50 then
-      self:set(0)
+      self:set(1)
     else
       self:set(100)
     end
