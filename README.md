@@ -35,6 +35,23 @@ brightness_ctrl = brightness({})
 right_layout:add(brightness_ctrl.widget)
 ```
 
+### Troubleshooting
+
+If you get errors on startup, try executing the following in a terminal:
+
+```bash
+xbacklight -get
+```
+
+If you get the error "No outputs have backlight property", make sure you have
+installed an appropriate display driver, e.g. for intel cards:
+
+```bash
+sudo pacman -S xf86-video-intel
+```
+
+You may need to restart afterwards.
+
 
 ### Requirements
 
