@@ -3,7 +3,10 @@
 ### Description
 
 Brightness (backlight) indicator+control widget for awesome window manager
-based on ``xbacklight``.
+based on ``xbacklight`` or ``brightnessctl``.
+
+Note that ``brightnessctl`` and ``acpilight`` seem to work better on some
+laptops where ``xbacklight`` does not work!
 
 
 ### Installation
@@ -15,6 +18,14 @@ cd ~/.config/awesome
 git clone https://github.com/deficient/brightness.git
 
 sudo pacman -S xorg-xbacklight
+
+# or:
+
+sudo pacman -S acpilight
+
+# or:
+
+sudo pacman -S brightnessctl
 ```
 
 
