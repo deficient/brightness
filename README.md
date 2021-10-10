@@ -46,12 +46,43 @@ brightness_ctrl = brightness({})
 right_layout:add(brightness_ctrl.widget)
 ```
 
+
+### Usage options
+
+Full example:
+
+```lua
+brightness_ctrl = brightness({
+  backend = nil,
+  step = 5,
+  timeout = 3,
+})
+```
+
+`backend`
+Picks command with which to perform brightness queries and updates.
+Allowed values are `nil` (meaning *autodetect*), `"xbacklight"` or
+`"brightnessctl"`. Default: `nil`.
+
+`step`
+How many percentage points to increase or decrease the brightness level when
+clicking the widget. Default: 3.
+
+`timeout`
+Interval in seconds at which to check the current brightness level and update
+the widget text. Default: 5.
+
+
 ### Troubleshooting
 
 If you get errors on startup, try executing the following in a terminal:
 
 ```bash
 xbacklight -get
+
+# or
+
+brightnessctl get
 ```
 
 If you get the error "No outputs have backlight property", make sure you have
