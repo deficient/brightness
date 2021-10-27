@@ -56,6 +56,7 @@ brightness_ctrl = brightness({
   backend = nil,
   step = 5,
   timeout = 3,
+  levels = {1, 25, 50, 75, 100},
 })
 ```
 
@@ -71,6 +72,10 @@ clicking the widget. Default: 3.
 `timeout`
 Interval in seconds at which to check the current brightness level and update
 the widget text. Default: 5.
+
+`levels`
+Cycle through these brightness percentages on middle-click.
+Default: ``{1, 25, 50, 75, 100}`.
 
 
 ### Troubleshooting

@@ -173,6 +173,7 @@ function vcontrol:init(args)
 
     self.backend = backend
     self.step = tonumber(args.step or '5')
+    self.levels = args.levels or {1, 25, 50, 75, 100}
 
     self.widget = wibox.widget.textbox()
     self.widget.set_align("right")
@@ -219,11 +220,14 @@ function vcontrol:down(step)
 end
 
 function vcontrol:toggle()
-    if self:get() >= 50 then
-      self:set(1)
-    else
-      self:set(100)
+    local value = self.backend:get()
+    local ilevel = 1
+    for i, lv in ipairs(self.levels) do
+        if math.abs(lv - value) < math.abs(self.levels[ilevel] - value) then
+            ilevel = i
+        end
     end
+    self:set(self.levels[ilevel % #(self.levels) + 1])
 end
 
 return setmetatable(vcontrol, {
