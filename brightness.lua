@@ -122,11 +122,11 @@ backends.xbacklight = {
         exec({self.cmd, "-set", tostring(value)}, callback)
     end,
 
-    up = function(self, callback)
+    up = function(self, step, callback)
         exec({self.cmd, "-inc", tostring(step)}, callback)
     end,
 
-    down = function(self, callback)
+    down = function(self, step, callback)
         exec({self.cmd, "-dec", tostring(step)}, callback)
     end,
 }
