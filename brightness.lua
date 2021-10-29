@@ -20,6 +20,7 @@ local gears = require("gears")
 local naughty = require("naughty")
 
 local timer = gears.timer or timer
+local exec = awful.spawn.easy_async
 
 
 ------------------------------------------
@@ -37,30 +38,12 @@ local function warning(text)
 end
 
 local function readcommand(command)
+    -- I know, you should *never* use `io.popen`, but it's called at most once
+    -- per backend through the whole awesome session… I promise!
     local file = io.popen(command)
     local text = file:read('*all')
     file:close()
     return text
-end
-
-local function quote_arg(str)
-    return "'" .. string.gsub(str, "'", "'\\''") .. "'"
-end
-
-local function quote_args(first, ...)
-    if #{...} == 0 then
-        return quote_arg(first)
-    else
-        return quote_arg(first), quote_args(...)
-    end
-end
-
-local function make_argv(...)
-    return table.concat({quote_args(...)}, " ")
-end
-
-local function exec(...)
-    return readcommand(make_argv(...))
 end
 
 
@@ -78,22 +61,28 @@ backends.brightnessctl = {
         return self:max() ~= nil
     end,
 
-    get = function(self)
-        local level = tonumber(exec(self.cmd, "get"))
-        return self:to_percent(level)
+    get = function(self, callback)
+        exec({self.cmd, "get"}, function(output)
+            local level = tonumber(output)
+            callback(self:to_percent(level))
+        end)
     end,
 
-    set = function(self, percent)
+    set = function(self, percent, callback)
         local level = self:from_percent(percent)
-        exec(self.cmd, "set", tostring(level))
+        exec({self.cmd, "set", tostring(level)}, callback)
     end,
 
-    up = function(self, step)
-        self:set(math.min(self:get() + step, 100))
+    up = function(self, step, callback)
+        self:get(function(value)
+            self:set(math.min(value + step, 100), callback)
+        end)
     end,
 
-    down = function(self, step)
-        self:set(math.max(self:get() - step, 0))
+    down = function(self, step, callback)
+        self:get(function(value)
+            self:set(math.max(value - step, 0), callback)
+        end)
     end,
 
     to_percent = function(self, value)
@@ -106,7 +95,7 @@ backends.brightnessctl = {
 
     max = function(self)
         if self._max == nil then
-            self._max = tonumber(exec(self.cmd, "max"))
+            self._max = tonumber(readcommand("brightnessctl max"))
         end
         return self._max
     end,
@@ -120,23 +109,25 @@ backends.xbacklight = {
     cmd = "xbacklight",
 
     supported = function(self)
-        return self:get() ~= nil
+        return tonumber(readcommand("xbacklight -get")) ~= nil
     end,
 
-    get = function(self)
-        return tonumber(exec(self.cmd, "-get"))
+    get = function(self, callback)
+        exec({self.cmd, "-get"}, function(output)
+            callback(tonumber(output))
+        end)
     end,
 
-    set = function(self, value)
-        exec(self.cmd, "-set", tostring(value))
+    set = function(self, value, callback)
+        exec({self.cmd, "-set", tostring(value)}, callback)
     end,
 
-    up = function(self)
-        exec(self.cmd, "-inc", tostring(step))
+    up = function(self, callback)
+        exec({self.cmd, "-inc", tostring(step)}, callback)
     end,
 
-    down = function(self)
-        exec(self.cmd, "-dec", tostring(step))
+    down = function(self, callback)
+        exec({self.cmd, "-dec", tostring(step)}, callback)
     end,
 }
 
@@ -187,47 +178,43 @@ function vcontrol:init(args)
     ))
 
     self.timer = timer({ timeout = args.timeout or 3 })
-    self.timer:connect_signal("timeout", function() self:get() end)
+    self.timer:connect_signal("timeout", function() self:update() end)
     self.timer:start()
-    self:get()
+    self:update()
 
     return self
 end
 
-function vcontrol:exec(...)
-    return readcommand(make_argv(self.cmd, ...))
+function vcontrol:update()
+    self.backend:get(function(value)
+        local brightness = math.floor(0.5 + value)
+        self.widget:set_text(string.format(" [%3d] ", brightness))
+        return brightness
+    end)
 end
 
-function vcontrol:get()
-    local brightness = math.floor(0.5 + self.backend:get())
-    self.widget:set_text(string.format(" [%3d] ", brightness))
-    return brightness
+function vcontrol:set(brightness, callback)
+    self.backend:set(brightness, callback or function() self:update() end)
 end
 
-function vcontrol:set(brightness)
-    self.backend:set(brightness)
-    self:get()
+function vcontrol:up(step, callback)
+    self.backend:up(step or self.step, callback or function() self:update() end)
 end
 
-function vcontrol:up(step)
-    self.backend:up(step or self.step)
-    self:get()
-end
-
-function vcontrol:down(step)
-    self.backend:down(step or self.step)
-    self:get()
+function vcontrol:down(step, callback)
+    self.backend:down(step or self.step, callback or function() self:update() end)
 end
 
 function vcontrol:toggle()
-    local value = self.backend:get()
-    local ilevel = 1
-    for i, lv in ipairs(self.levels) do
-        if math.abs(lv - value) < math.abs(self.levels[ilevel] - value) then
-            ilevel = i
+    self.backend:get(function(value)
+        local ilevel = 1
+        for i, lv in ipairs(self.levels) do
+            if math.abs(lv - value) < math.abs(self.levels[ilevel] - value) then
+                ilevel = i
+            end
         end
-    end
-    self:set(self.levels[ilevel % #(self.levels) + 1])
+        self:set(self.levels[ilevel % #(self.levels) + 1])
+    end)
 end
 
 return setmetatable(vcontrol, {

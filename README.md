@@ -102,4 +102,4 @@ You may need to restart afterwards.
 
 ### Requirements
 
-* [awesome 4.0](http://awesome.naquadah.org/) or possibly 3.5
+* [awesome 4.0](http://awesome.naquadah.org/)
