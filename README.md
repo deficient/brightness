@@ -34,12 +34,8 @@ sudo pacman -S brightnessctl
 In your `~/.config/awesome/rc.lua`:
 
 ```lua
--- load the module
-local brightness = require("brightness")
-
-
--- instanciate the control
-brightness_ctrl = brightness({})
+-- load and instanciate module:
+local brightness_ctrl = require("brightness") { }
 
 
 -- add the widget to your wibox
@@ -52,12 +48,12 @@ right_layout:add(brightness_ctrl.widget)
 Full example:
 
 ```lua
-brightness_ctrl = brightness({
+local brightness_ctrl = require("brightness") {
   backend = nil,
   step = 5,
   timeout = 3,
   levels = {1, 25, 50, 75, 100},
-})
+}
 ```
 
 `backend`
