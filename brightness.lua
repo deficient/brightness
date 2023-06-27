@@ -158,6 +158,7 @@ function vcontrol:init(args)
         elseif backends.xbacklight:supported() then
             backend = backends.xbacklight
         else
+            backend = nil
             warning("Neither brightnessctl nor xbacklight seems to work")
         end
     end
@@ -166,21 +167,26 @@ function vcontrol:init(args)
     self.step = tonumber(args.step or '5')
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
-    self.widget = wibox.widget.textbox()
-    self.widget.set_align("right")
+    if backend == nil then
+        self.widget = nil
+        self.timer = nil
+    else
+        self.widget = wibox.widget.textbox()
+        self.widget.set_align("right")
 
-    self.widget:buttons(awful.util.table.join(
-        awful.button({ }, 1, function() self:up() end),
-        awful.button({ }, 3, function() self:down() end),
-        awful.button({ }, 2, function() self:toggle() end),
-        awful.button({ }, 4, function() self:up(1) end),
-        awful.button({ }, 5, function() self:down(1) end)
-    ))
+        self.widget:buttons(awful.util.table.join(
+            awful.button({ }, 1, function() self:up() end),
+            awful.button({ }, 3, function() self:down() end),
+            awful.button({ }, 2, function() self:toggle() end),
+            awful.button({ }, 4, function() self:up(1) end),
+            awful.button({ }, 5, function() self:down(1) end)
+        ))
 
-    self.timer = timer({ timeout = args.timeout or 3 })
-    self.timer:connect_signal("timeout", function() self:update() end)
-    self.timer:start()
-    self:update()
+        self.timer = timer({ timeout = args.timeout or 3 })
+        self.timer:connect_signal("timeout", function() self:update() end)
+        self.timer:start()
+        self:update()
+    end
 
     return self
 end
