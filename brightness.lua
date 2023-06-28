@@ -62,7 +62,7 @@ backends.brightnessctl = {
     end,
 
     get = function(self, callback)
-        exec({self.cmd, "get"}, function(output)
+        exec({self.cmd, "--class=backlight", "get"}, function(output)
             local level = tonumber(output)
             callback(self:to_percent(level))
         end)
@@ -70,7 +70,7 @@ backends.brightnessctl = {
 
     set = function(self, percent, callback)
         local level = self:from_percent(percent)
-        exec({self.cmd, "set", tostring(level)}, callback)
+        exec({self.cmd, "--class=backlight", "set", tostring(level)}, callback)
     end,
 
     up = function(self, step, callback)
@@ -95,7 +95,7 @@ backends.brightnessctl = {
 
     max = function(self)
         if self._max == nil then
-            self._max = tonumber(readcommand("brightnessctl max"))
+            self._max = tonumber(readcommand("brightnessctl --class=backlight max"))
         end
         return self._max
     end,
