@@ -168,7 +168,7 @@ function vcontrol:init(args)
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
     if backend == nil then
-        self.widget = nil
+        self.widget = wibox.widget.textbox()
         self.timer = nil
     else
         self.widget = wibox.widget.textbox()
