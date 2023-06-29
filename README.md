@@ -2,11 +2,20 @@
 
 ### Description
 
-Brightness (backlight) indicator+control widget for awesome window manager
+Brightness indicator/control widget for [awesome wm](https://awesomewm.org/)
 based on ``xbacklight`` or ``brightnessctl``.
 
+
+### Dependencies:
+
+The module requires either of the programs `xbacklight` or `brightnessctl` to work.
+On archlinux, the corresponding system packages are called:
+
+- *acpilight* or *xorg-xbacklight* for `xbacklight`
+- *brightnessctl* for `brightnessctl`
+
 Note that ``brightnessctl`` and ``acpilight`` seem to work better on some
-laptops where ``xbacklight`` does not work!
+laptops where ``xorg-xbacklight`` does not work!
 
 
 ### Installation
@@ -16,16 +25,6 @@ Drop the script into your awesome config folder. Suggestion:
 ```bash
 cd ~/.config/awesome
 git clone https://github.com/deficient/brightness.git
-
-sudo pacman -S xorg-xbacklight
-
-# or:
-
-sudo pacman -S acpilight
-
-# or:
-
-sudo pacman -S brightnessctl
 ```
 
 
@@ -34,13 +33,22 @@ sudo pacman -S brightnessctl
 In your `~/.config/awesome/rc.lua`:
 
 ```lua
--- load and instanciate module:
-local brightness_ctrl = require("brightness") { }
+-- Import and instanciate:
+local brightness_ctrl = require("brightness") {
+    -- pass options here
+}
 
-
--- add the widget to your wibox
-right_layout:add(brightness_ctrl.widget)
+-- Add widget to the wibox:
+s.mywibox:setup {
+    ...,
+    { -- Right widgets
+        ...,
+        brightness_ctrl.widget,
+    },
+}
 ```
+
+Note that you need to pass `.widget` to the wibox, not the instance itself!
 
 The flag `brightness_ctrl.is_valid` indicates successful initialization.
 
@@ -78,15 +86,8 @@ Default: ``{1, 25, 50, 75, 100}`.
 
 ### Troubleshooting
 
-If you get errors on startup, try executing the following in a terminal:
-
-```bash
-xbacklight -get
-
-# or
-
-brightnessctl get
-```
+If you get errors on startup, try executing `xbacklight -get` or
+`brightnessctl -c backlight get` in a terminal.
 
 If you get the error "No outputs have backlight property", make sure you have
 installed an appropriate display driver, e.g. for intel cards:
