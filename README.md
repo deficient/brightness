@@ -8,8 +8,9 @@ based on ``xbacklight`` or ``brightnessctl``.
 
 ### Dependencies:
 
-The module requires either of the programs `xbacklight` or `brightnessctl` to work.
-On archlinux, the corresponding system packages are called:
+The module requires either `xbacklight` or `brightnessctl` to work.
+Thus, on archlinux, you'll need to install at least one of the following
+system packages:
 
 - [acpilight](https://archlinux.org/packages/extra/any/acpilight/) or
   [xorg-xbacklight](https://archlinux.org/packages/extra/x86_64/xorg-xbacklight/) for `xbacklight`
