@@ -11,8 +11,9 @@ based on ``xbacklight`` or ``brightnessctl``.
 The module requires either of the programs `xbacklight` or `brightnessctl` to work.
 On archlinux, the corresponding system packages are called:
 
-- *acpilight* or *xorg-xbacklight* for `xbacklight`
-- *brightnessctl* for `brightnessctl`
+- [acpilight](https://archlinux.org/packages/extra/any/acpilight/) or
+  [xorg-xbacklight](https://archlinux.org/packages/extra/x86_64/xorg-xbacklight/) for `xbacklight`
+- [brightnessctl](https://archlinux.org/packages/extra/x86_64/brightnessctl/) for `brightnessctl`
 
 Note that ``brightnessctl`` and ``acpilight`` seem to work better on some
 laptops where ``xorg-xbacklight`` does not work!
