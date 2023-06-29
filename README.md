@@ -16,8 +16,8 @@ system packages:
   [xorg-xbacklight](https://archlinux.org/packages/extra/x86_64/xorg-xbacklight/) for `xbacklight`
 - [brightnessctl](https://archlinux.org/packages/extra/x86_64/brightnessctl/) for `brightnessctl`
 
-Note that ``brightnessctl`` and ``acpilight`` seem to work better on some
-laptops where ``xorg-xbacklight`` does not work!
+I've experienced `xorg-xbacklight` not work on certain laptops. So, if you
+find that the widget is not working, try a different backend.
 
 
 ### Installation
