@@ -42,6 +42,8 @@ local brightness_ctrl = require("brightness") { }
 right_layout:add(brightness_ctrl.widget)
 ```
 
+The flag `brightness_ctrl.is_valid` indicates successful initialization.
+
 
 ### Usage options
 
