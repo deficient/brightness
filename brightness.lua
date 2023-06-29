@@ -167,13 +167,10 @@ function vcontrol:init(args)
     self.step = tonumber(args.step or '5')
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
-    if backend == nil then
-        self.widget = wibox.widget.textbox()
-        self.timer = nil
-    else
-        self.widget = wibox.widget.textbox()
-        self.widget.set_align("right")
+    self.widget = wibox.widget.textbox()
+    self.widget.set_align("right")
 
+    if self.backend ~= nil then
         self.widget:buttons(awful.util.table.join(
             awful.button({ }, 1, function() self:up() end),
             awful.button({ }, 3, function() self:down() end),
