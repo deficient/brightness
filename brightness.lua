@@ -58,46 +58,35 @@ backends.brightnessctl = {
     _max = nil,
 
     supported = function(self)
-        return self:max() ~= nil
+        return tonumber(readcommand("brightnessctl --class=backlight max")) ~= nil
+    end,
+
+    parse_output = function(self, output, callback)
+        -- dev,class,curr,percent,max
+        local _, _, _, percent, _ = output:match("(.*),(.*),(%d*),(%d*)%%,(%d*)")
+        return tonumber(percent)
     end,
 
     get = function(self, callback)
-        exec({self.cmd, "--class=backlight", "get"}, function(output)
-            local level = tonumber(output)
-            callback(self:to_percent(level))
+        exec({ self.cmd, "--class=backlight", "-m", "info" }, function(output)
+            callback(self:parse_output(output))
         end)
     end,
 
     set = function(self, percent, callback)
-        local level = self:from_percent(percent)
-        exec({self.cmd, "--class=backlight", "set", tostring(level)}, callback)
+        exec({ self.cmd, "--class=backlight", "-m", "set", percent .. "%" }, function(output)
+            callback(self:parse_output(output))
+        end)
     end,
 
     up = function(self, step, callback)
-        self:get(function(value)
-            self:set(math.min(value + step, 100), callback)
+    		exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%+" }, function(output)
+            callback(self:parse_output(output))
         end)
     end,
 
     down = function(self, step, callback)
-        self:get(function(value)
-            self:set(math.max(value - step, 0), callback)
-        end)
-    end,
-
-    to_percent = function(self, value)
-        return value * 100 / self:max()
-    end,
-
-    from_percent = function(self, percent)
-        return math.floor(percent * self:max() / 100)
-    end,
-
-    max = function(self)
-        if self._max == nil then
-            self._max = tonumber(readcommand("brightnessctl --class=backlight max"))
-        end
-        return self._max
+    		exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%-" }, callback)
     end,
 }
 
