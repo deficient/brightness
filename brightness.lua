@@ -80,13 +80,13 @@ backends.brightnessctl = {
     end,
 
     up = function(self, step, callback)
-    		exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%+" }, function(output)
+        exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%+" }, function(output)
             callback(self:parse_output(output))
         end)
     end,
 
     down = function(self, step, callback)
-    		exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%-" }, callback)
+        exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%-" }, callback)
     end,
 }
 
