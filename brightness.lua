@@ -169,33 +169,35 @@ function vcontrol:init(args)
             awful.button({ }, 5, function() self:down(1) end)
         ))
 
-        self.timer = timer({ timeout = args.timeout or 3 })
-        self.timer:connect_signal("timeout", function() self:update() end)
-        self.timer:start()
-        self:update()
+        self.timer = timer({
+            timeout = args.timeout or 3,
+            callback = function(...) self:update(...) end,
+            autostart = true,
+            call_now = true
+        })
     end
 
     return self
 end
 
-function vcontrol:update()
-    self.backend:get(function(value)
+function vcontrol:update(opt_value)
+    local done = function(value)
         local brightness = math.floor(0.5 + value)
         self.widget:set_text(string.format(" [%3d] ", brightness))
-        return brightness
-    end)
+    end
+    if opt_value then done(opt_value) else self.backend:get(done) end
 end
 
 function vcontrol:set(brightness, callback)
-    self.backend:set(brightness, callback or function() self:update() end)
+    self.backend:set(brightness, callback or function(...) self:update(...) end)
 end
 
 function vcontrol:up(step, callback)
-    self.backend:up(step or self.step, callback or function() self:update() end)
+    self.backend:up(step or self.step, callback or function(...) self:update(...) end)
 end
 
 function vcontrol:down(step, callback)
-    self.backend:down(step or self.step, callback or function() self:update() end)
+    self.backend:down(step or self.step, callback or function(...) self:update(...) end)
 end
 
 function vcontrol:toggle()
