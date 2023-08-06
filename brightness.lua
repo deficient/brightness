@@ -224,3 +224,4 @@ end
 return setmetatable(vcontrol, {
   __call = vcontrol.new,
 })
+-- vim: set ts=4 sw=4 et:
