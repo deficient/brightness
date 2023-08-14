@@ -187,7 +187,11 @@ function vcontrol:update(opt_value)
         local brightness = math.floor(0.5 + value)
         self.widget:set_text(string.format(" [%3d] ", brightness))
     end
-    if opt_value then done(opt_value) else self.backend:get(done) end
+    if opt_value and string.match(opt_value, "%S+") then
+        done(opt_value)
+    else
+        self.backend:get(done)
+    end
 end
 
 function vcontrol:set(brightness, callback)
