@@ -124,15 +124,15 @@ backends.xbacklight = {
 
 
 ------------------------------------------
--- Volume control interface
+-- Brightness control interface
 ------------------------------------------
-local vcontrol = { backends = backends }
+local bcontrol = { backends = backends }
 
-function vcontrol:new(args)
+function bcontrol:new(args)
     return setmetatable({}, {__index = self}):init(args)
 end
 
-function vcontrol:init(args)
+function bcontrol:init(args)
     -- determine backend
     local backend = args.backend
 
@@ -182,12 +182,12 @@ function vcontrol:init(args)
     return self
 end
 
-function vcontrol:set_text(value)
+function bcontrol:set_text(value)
     local brightness = math.floor(0.5 + value)
     self.widget:set_text(string.format(" [%3d] ", brightness))
 end
 
-function vcontrol:update(opt_value)
+function bcontrol:update(opt_value)
     if opt_value and string.match(opt_value, "%S+") then
         self:set_text(opt_value)
     else
@@ -195,19 +195,19 @@ function vcontrol:update(opt_value)
     end
 end
 
-function vcontrol:set(brightness, callback)
+function bcontrol:set(brightness, callback)
     self.backend:set(brightness, callback or function(...) self:update(...) end)
 end
 
-function vcontrol:up(step, callback)
+function bcontrol:up(step, callback)
     self.backend:up(step or self.step, callback or function(...) self:update(...) end)
 end
 
-function vcontrol:down(step, callback)
+function bcontrol:down(step, callback)
     self.backend:down(step or self.step, callback or function(...) self:update(...) end)
 end
 
-function vcontrol:toggle()
+function bcontrol:toggle()
     self.backend:get(function(value)
         local ilevel = 1
         for i, lv in ipairs(self.levels) do
@@ -219,7 +219,7 @@ function vcontrol:toggle()
     end)
 end
 
-return setmetatable(vcontrol, {
-  __call = vcontrol.new,
+return setmetatable(bcontrol, {
+  __call = bcontrol.new,
 })
 -- vim: set ts=4 sw=4 et:
