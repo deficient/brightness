@@ -58,46 +58,37 @@ backends.brightnessctl = {
     _max = nil,
 
     supported = function(self)
-        return self:max() ~= nil
+        return tonumber(readcommand("brightnessctl --class=backlight max")) ~= nil
+    end,
+
+    parse_output = function(self, output, callback)
+        -- dev,class,curr,percent,max
+        local _, _, _, percent, _ = output:match("(.*),(.*),(%d*),(%d*)%%,(%d*)")
+        return tonumber(percent)
     end,
 
     get = function(self, callback)
-        exec({self.cmd, "--class=backlight", "get"}, function(output)
-            local level = tonumber(output)
-            callback(self:to_percent(level))
+        exec({ self.cmd, "--class=backlight", "-m", "info" }, function(output)
+            callback(self:parse_output(output))
         end)
     end,
 
     set = function(self, percent, callback)
-        local level = self:from_percent(percent)
-        exec({self.cmd, "--class=backlight", "set", tostring(level)}, callback)
+        exec({ self.cmd, "--class=backlight", "-m", "set", percent .. "%" }, function(output)
+            callback(self:parse_output(output))
+        end)
     end,
 
     up = function(self, step, callback)
-        self:get(function(value)
-            self:set(math.min(value + step, 100), callback)
+        exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%+" }, function(output)
+            callback(self:parse_output(output))
         end)
     end,
 
     down = function(self, step, callback)
-        self:get(function(value)
-            self:set(math.max(value - step, 0), callback)
+        exec({ self.cmd, "--class=backlight", "-m", "set", step .. "%-" }, function(output)
+            callback(self:parse_output(output))
         end)
-    end,
-
-    to_percent = function(self, value)
-        return value * 100 / self:max()
-    end,
-
-    from_percent = function(self, percent)
-        return math.floor(percent * self:max() / 100)
-    end,
-
-    max = function(self)
-        if self._max == nil then
-            self._max = tonumber(readcommand("brightnessctl --class=backlight max"))
-        end
-        return self._max
     end,
 }
 
@@ -180,33 +171,40 @@ function bcontrol:init(args)
             awful.button({ }, 5, function() self:down(1) end)
         ))
 
-        self.timer = timer({ timeout = args.timeout or 3 })
-        self.timer:connect_signal("timeout", function() self:update() end)
-        self.timer:start()
-        self:update()
+        self.timer = timer({
+            timeout = args.timeout or 3,
+            callback = function(...) self:update(...) end,
+            autostart = true,
+            call_now = true
+        })
     end
 
     return self
 end
 
-function bcontrol:update()
-    self.backend:get(function(value)
-        local brightness = math.floor(0.5 + value)
-        self.widget:set_text(string.format(" [%3d] ", brightness))
-        return brightness
-    end)
+function bcontrol:set_text(value)
+    local brightness = math.floor(0.5 + value)
+    self.widget:set_text(string.format(" [%3d] ", brightness))
+end
+
+function bcontrol:update(opt_value)
+    if opt_value and string.match(opt_value, "%S+") then
+        self:set_text(opt_value)
+    else
+        self.backend:get(function(...) self:set_text(...) end)
+    end
 end
 
 function bcontrol:set(brightness, callback)
-    self.backend:set(brightness, callback or function() self:update() end)
+    self.backend:set(brightness, callback or function(...) self:update(...) end)
 end
 
 function bcontrol:up(step, callback)
-    self.backend:up(step or self.step, callback or function() self:update() end)
+    self.backend:up(step or self.step, callback or function(...) self:update(...) end)
 end
 
 function bcontrol:down(step, callback)
-    self.backend:down(step or self.step, callback or function() self:update() end)
+    self.backend:down(step or self.step, callback or function(...) self:update(...) end)
 end
 
 function bcontrol:toggle()
@@ -224,3 +222,4 @@ end
 return setmetatable(bcontrol, {
   __call = bcontrol.new,
 })
+-- vim: set ts=4 sw=4 et:
