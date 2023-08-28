@@ -17,6 +17,7 @@ alternative ways to control brightness:
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
+local gtable = require("gears.table")
 local naughty = require("naughty")
 
 local timer = gears.timer or timer
@@ -171,7 +172,7 @@ function bcontrol:init(args)
     end
 
     if self.is_valid then
-        self.widget:buttons(gears.table.join(
+        self.widget:buttons(gtable.join(
             awful.button({ }, 1, function() self:up() end),
             awful.button({ }, 3, function() self:down() end),
             awful.button({ }, 2, function() self:toggle() end),
