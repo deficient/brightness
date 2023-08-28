@@ -29,6 +29,7 @@ local exec = awful.spawn.easy_async
 ------------------------------------------
 
 local function warning(text)
+    if not naughty then return end
     local args = {
         title = "Brightness Control",
         preset = naughty.config.presets.normal,
