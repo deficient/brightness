@@ -17,6 +17,7 @@ alternative ways to control brightness:
 local awful = require("awful")
 local wibox = require("wibox")
 local gears = require("gears")
+local gtable = require("gears.table")
 local naughty = require("naughty")
 
 local timer = gears.timer or timer
@@ -28,12 +29,17 @@ local exec = awful.spawn.easy_async
 ------------------------------------------
 
 local function warning(text)
-    if naughty then
-        naughty.notify {
-            title = "Brightness Control",
-            text = text,
-            preset = naughty.config.presets.normal,
-        }
+    if not naughty then return end
+    local args = {
+        title = "Brightness Control",
+        preset = naughty.config.presets.normal,
+    }
+    if naughty.notification then
+        args.message = text
+        naughty.notification(args)
+    else
+        args.text = text
+        naughty.notify(args)
     end
 end
 
@@ -160,10 +166,9 @@ function bcontrol:init(args)
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
     self.widget = wibox.widget.textbox()
-    self.widget.set_align("right")
 
     if self.is_valid then
-        self.widget:buttons(awful.util.table.join(
+        self.widget:buttons(gtable.join(
             awful.button({ }, 1, function() self:up() end),
             awful.button({ }, 3, function() self:down() end),
             awful.button({ }, 2, function() self:toggle() end),
