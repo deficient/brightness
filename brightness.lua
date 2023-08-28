@@ -28,12 +28,16 @@ local exec = awful.spawn.easy_async
 ------------------------------------------
 
 local function warning(text)
-    if naughty then
-        naughty.notify {
-            title = "Brightness Control",
-            text = text,
-            preset = naughty.config.presets.normal,
-        }
+    local args = {
+        title = "Brightness Control",
+        preset = naughty.config.presets.normal,
+    }
+    if naughty.notification then
+        args.message = text
+        naughty.notification(args)
+    else
+        args.text = text
+        naughty.notify(args)
     end
 end
 
@@ -160,10 +164,14 @@ function bcontrol:init(args)
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
     self.widget = wibox.widget.textbox()
-    self.widget.set_align("right")
+    if self.widget.set_halign then
+        self.widget.set_halign('right')
+    else
+        self.widget.set_align("right")
+    end
 
     if self.is_valid then
-        self.widget:buttons(awful.util.table.join(
+        self.widget:buttons(gears.table.join(
             awful.button({ }, 1, function() self:up() end),
             awful.button({ }, 3, function() self:down() end),
             awful.button({ }, 2, function() self:toggle() end),
