@@ -165,11 +165,6 @@ function bcontrol:init(args)
     self.levels = args.levels or {1, 25, 50, 75, 100}
 
     self.widget = wibox.widget.textbox()
-    if self.widget.set_halign then
-        self.widget.set_halign('right')
-    else
-        self.widget.set_align("right")
-    end
 
     if self.is_valid then
         self.widget:buttons(gtable.join(
