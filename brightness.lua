@@ -67,7 +67,7 @@ backends.brightnessctl = {
         return tonumber(readcommand("brightnessctl --class=backlight max")) ~= nil
     end,
 
-    parse_output = function(self, output, callback)
+    parse_output = function(self, output)
         -- dev,class,curr,percent,max
         local _, _, _, percent, _ = output:match("(.*),(.*),(%d*),(%d*)%%,(%d*)")
         return tonumber(percent)
@@ -178,7 +178,7 @@ function bcontrol:init(args)
 
         self.timer = timer({
             timeout = args.timeout or 3,
-            callback = function(...) self:update(...) end,
+            callback = function() self:update() end,
             autostart = true,
             call_now = true
         })
